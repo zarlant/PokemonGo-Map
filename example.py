@@ -523,8 +523,12 @@ def login(args):
 
     print '[+] Received API endpoint: {}'.format(api_endpoint)
 
-    profile_response = retrying_get_profile(args.auth_service, access_token,
+    try:
+        profile_response = retrying_get_profile(args.auth_service, access_token,
                                             api_endpoint, None)
+    except Exception as err:
+        print(str(err))
+
     if profile_response is None or not profile_response.payload:
         raise Exception('Could not get profile')
 
@@ -706,6 +710,7 @@ transform_from_wgs_to_gcj(Location(Fort.Latitude, Fort.Longitude))
             "id": poke.pokemon.PokemonId,
             "name": pokename
         }
+        print("Found Pokemon: %s. At: %s, %s" % (pokename, poke.Latitude, poke.Longitude))
 
 def clear_stale_pokemons():
     current_time = time.time()
