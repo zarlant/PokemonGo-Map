@@ -3,7 +3,8 @@
 
 import logging
 from peewee import Model, SqliteDatabase, InsertQuery, IntegerField,\
-                   CharField, FloatField, BooleanField, DateTimeField
+                   CharField, FloatField, BooleanField, DateTimeField, PostgresqlDatabase
+
 from datetime import datetime
 from base64 import b64encode
 
@@ -11,6 +12,7 @@ from .utils import get_pokemon_name
 
 
 db = SqliteDatabase('pogom.db')
+# db = PostgresqlDatabase('postgres', host='localhost', port=5432, password='pokeDevPass1#', user='postgres')
 log = logging.getLogger(__name__)
 
 
@@ -77,6 +79,10 @@ class Gym(BaseModel):
     latitude = FloatField()
     longitude = FloatField()
     last_modified = DateTimeField()
+
+class UserAccount(BaseModel):
+    account_id = CharField(primary_key=True)
+    location_string = CharField()
 
 
 def parse_map(map_dict):
