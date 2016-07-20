@@ -728,7 +728,8 @@ transform_from_wgs_to_gcj(Location(Fort.Latitude, Fort.Longitude))
             "id": poke.pokemon.PokemonId,
             "name": pokename
         }
-        print("Found Pokemon: %s. At: %s, %s" % (pokename, poke.Latitude, poke.Longitude))
+
+        debug("Found Pokemon: %s. At: %s, %s" % (pokename.encode('utf-8'), poke.Latitude, poke.Longitude))
 
 def clear_stale_pokemons():
     current_time = time.time()
