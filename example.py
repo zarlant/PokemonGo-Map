@@ -166,6 +166,7 @@ def retrying_set_location(location_name):
 
 
 def set_location(location_name):
+    changed_location = False
     geolocator = GoogleV3()
     prog = re.compile('^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$')
     global origin_lat
@@ -173,15 +174,22 @@ def set_location(location_name):
     if prog.match(location_name):
         local_lat, local_lng = [float(x) for x in location_name.split(",")]
         alt = 0
+        if origin_lat != local_lat or origin_lon != local_lng:
+            changed_location = True
         origin_lat, origin_lon = local_lat, local_lng
     else:
         loc = geolocator.geocode(location_name)
+        if origin_lat != loc.latitude or origin_lon != loc.longitude:
+            changed_location = True
         origin_lat, origin_lon = local_lat, local_lng = loc.latitude, loc.longitude
         alt = loc.altitude
         print '[!] Your given location: {}'.format(loc.address.encode('utf-8'))
 
     print('[!] lat/long/alt: {} {} {}'.format(local_lat, local_lng, alt))
-    set_location_coords(local_lat, local_lng, alt)
+    if changed_location:
+        set_location_coords(local_lat, local_lng, alt)
+
+    return changed_location
 
 
 def set_location_coords(lat, long, alt):
@@ -778,6 +786,13 @@ app = create_app()
 @app.route('/data')
 def data():
     """ Gets all the PokeMarkers via REST """
+    location = str(flask.request.args.get('q')).replace("(", "").replace(")", "")
+    debug("New Location: %s" % location)
+    if location is not None:
+        global reset_search_loop
+        changed = set_location(location)
+        if changed:
+            reset_search_loop = True
     return json.dumps(get_pokemarkers())
 
 @app.route('/raw_data')
