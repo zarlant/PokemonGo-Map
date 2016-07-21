@@ -70,6 +70,9 @@ def search(args):
 
     i = 1
     for step_location in generate_location_steps(position, num_steps):
+        if config['ORIGINAL_LATITUDE'] != position[0] or config['ORIGINAL_LONGITUDE'] != position[1]:
+            log.info("Original location changed. Restarting Search loop.")
+            return
         log.info('Scanning step {:d} of {:d}.'.format(i, num_steps**2))
         log.debug('Scan location is {:f}, {:f}'.format(step_location[0], step_location[1]))
 

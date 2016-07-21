@@ -1,5 +1,7 @@
 var map, 
     marker,
+    current_lat,
+    current_lon,
     lastStamp = 0,
     requestInterval = 10000;
 
@@ -113,7 +115,8 @@ initMap = function() {
         map: map,
         animation: google.maps.Animation.DROP
     });
-
+    current_lat = center_lat;
+    current_lon = center_lng;
     google.maps.event.addListener(map, 'dragend', function () {
         marker.setPosition(this.getCenter()); // set marker position to map center
         ResetLocation();
@@ -127,14 +130,17 @@ initMap = function() {
 ResetLocation = function(){
     try{
         var center_loc = map.getCenter();
-        if (center_loc.lat() != center_lat && center_loc.lng() != center_lng){
-            console.log("Resetting location to map center");
-            console.log("Map center: " + center_loc);
-            console.log("Current Lat: " + center_lat);
-            console.log("Current Lng: " + center_lng);
+        if (center_loc.lat() != current_lat && center_loc.lng() != current_lon){
+            //console.log("Resetting location to map center");
+            //console.log("Map center: " + center_loc);
+            //console.log("Current Lat: " + current_lat);
+            //console.log("Current Lng: " + current_lon);
 
             $.post("/next_loc?lat="+center_loc.lat()+"&lon=" + center_loc.lng(), function(data){
-               console.log(data)
+               if (data == "ok"){
+                   current_lat = center_loc.lat();
+                   curret_lon = center_loc.lng();
+               }
             });
         }
     }
@@ -144,7 +150,6 @@ ResetLocation = function(){
 };
 
 GetNewPokemons = function(stamp) {
-    console.log("Getting new pokemons " + Date.now().toString());
     $.getJSON("/pokemons/"+stamp, function(result){
         $.each(result, function(i, item){
 
