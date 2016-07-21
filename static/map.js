@@ -108,6 +108,11 @@ initMap = function() {
 
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: center_lat, lng: center_lng},
+        streetViewControl: false,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeControl: false,
+        zoomControl: true,
+        fullscreenControl: true,
         zoom: 16
     });
     var marker = new google.maps.Marker({
