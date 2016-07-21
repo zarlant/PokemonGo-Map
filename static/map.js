@@ -6,24 +6,25 @@ var map,
 var markers = [];
 var gym_types = [ "Uncontested", "Mystic", "Valor", "Instinct" ];
 
-var now = new Date();
-var difference = Math.abs(disappear_date - now);
-var hours = Math.floor(difference / 36e5);
-var minutes = Math.floor((difference - (hours * 36e5)) / 6e4);
-var seconds = Math.floor((difference - (hours * 36e5) - (minutes * 6e4)) / 1e3);
+//var now = new Date();
+//var difference = Math.abs(disappear_date - now);
+//var hours = Math.floor(difference / 36e5);
+//var minutes = Math.floor((difference - (hours * 36e5)) / 6e4);
+//var seconds = Math.floor((difference - (hours * 36e5) - (minutes * 6e4)) / 1e3);
 
-if(disappear_date < now){
-    timestring = "(expired)";
-}
-else {
-    timestring = "(";
-    if(hours > 0)
-        timestring = hours + "h";
+//if(disappear_date < now){
+//    timestring = "(expired)";
+//}
+//else {
+//    timestring = "(";
+//    if(hours > 0)
+//        timestring = hours + "h";
+//
+//    timestring += ("0" + minutes).slice(-2) + "m";
+//    timestring += ("0" + seconds).slice(-2) + "s";
+//    timestring += ")";
+//}
 
-    timestring += ("0" + minutes).slice(-2) + "m";
-    timestring += ("0" + seconds).slice(-2) + "s";
-    timestring += ")";
-}
 var pad = function pad(number) {
   return number <= 99 ? ("0" + number).slice(-2) : number;
 };
@@ -102,6 +103,7 @@ pokestopLabel = function pokestopLabel(item) {
 }
 
 initMap = function() {
+
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: center_lat, lng: center_lng},
         zoom: 16
@@ -110,13 +112,39 @@ initMap = function() {
         position: {lat: center_lat, lng: center_lng},
         map: map,
         animation: google.maps.Animation.DROP
-    });  
+    });
+
+    google.maps.event.addListener(map, 'dragend', function () {
+        marker.setPosition(this.getCenter()); // set marker position to map center
+        ResetLocation();
+    });
+
     GetNewPokemons(lastStamp);
     GetNewGyms();
     GetNewPokeStops();
 };
 
+ResetLocation = function(){
+    try{
+        var center_loc = map.getCenter();
+        if (center_loc.lat() != center_lat && center_loc.lng() != center_lng){
+            console.log("Resetting location to map center");
+            console.log("Map center: " + center_loc);
+            console.log("Current Lat: " + center_lat);
+            console.log("Current Lng: " + center_lng);
+
+            $.post("/next_loc?lat="+center_loc.lat()+"&lon=" + center_loc.lng(), function(data){
+               console.log(data)
+            });
+        }
+    }
+    catch(e) {
+        console.log("Error getting map center: " + e)
+    }
+};
+
 GetNewPokemons = function(stamp) {
+    console.log("Getting new pokemons " + Date.now().toString());
     $.getJSON("/pokemons/"+stamp, function(result){
         $.each(result, function(i, item){
 
@@ -267,4 +295,4 @@ $('.label-countdown').each(function (index, element) {
     });
 };
 
-window.setInterval(setLabelTime, 1000);
+window.setInterval(setLabelTime, 500);

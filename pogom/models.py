@@ -123,7 +123,7 @@ class UserAccount(BaseModel):
     account_id = CharField(primary_key=True)
     location_string = CharField()
 
-    
+
 def parse_map(map_dict):
     pokemons = {}
     pokestops = {}
