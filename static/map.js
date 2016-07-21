@@ -115,14 +115,16 @@ initMap = function() {
         fullscreenControl: true,
         zoom: 16
     });
+    center_map_button.add_center_me(map, false);
     var marker = new google.maps.Marker({
         position: {lat: center_lat, lng: center_lng},
         map: map,
-        animation: google.maps.Animation.DROP
+        animation: google.maps.Animation.DROP,
+        icon: "/static/images/ash.ico"
     });
     current_lat = center_lat;
     current_lon = center_lng;
-    google.maps.event.addListener(map, 'dragend', function () {
+    google.maps.event.addListener(map, 'center_changed', function () {
         marker.setPosition(this.getCenter()); // set marker position to map center
         ResetLocation();
     });
